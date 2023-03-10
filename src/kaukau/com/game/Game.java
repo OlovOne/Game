@@ -13,9 +13,12 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import kaukau.com.entitys.Bullet;
+import kaukau.com.entitys.Enemy;
 import kaukau.com.entitys.Entity;
 import kaukau.com.entitys.Player;
 import kaukau.com.graphics.SpriteSheet;
+import kaukau.com.world.World;
 
 
 
@@ -28,9 +31,9 @@ public class Game extends Canvas implements Runnable,KeyListener{
 	
 	//Frame 
 	private JFrame frame;
-	private static final int WIDTH = 240;
-	private static final int HEIGHT = 160;
-	private static final int SCALE = 3;
+	private final static int WIDTH = 240;
+	private final static int HEIGHT = 160;
+	private final int SCALE = 3;
 	
 	//Graphics
 	private BufferedImage image;
@@ -39,11 +42,13 @@ public class Game extends Canvas implements Runnable,KeyListener{
 	private static SpriteSheet spritesheet;
 	
 	//Graphics map
-	
+	private static World world;
 	
 	//Entity
-	private Player player;
-	private List<Entity> entityList;
+	private static Player player;
+	private static List<Entity> entityList;
+	private static List<Bullet> bulletList;
+	private static List<Enemy> enemyList;
 
 	
 	public Game() {
@@ -53,7 +58,10 @@ public class Game extends Canvas implements Runnable,KeyListener{
 		spritesheet = new SpriteSheet("/spritesheet.gif");
 		player = new Player(32,32,16,16);
 		entityList = new ArrayList<Entity>();
+		bulletList = new ArrayList<Bullet>();
+		enemyList = new ArrayList<Enemy>();
 		entityList.add(player);
+		world = new World("/map.gif");
 		this.addKeyListener(this);
 	}
 	
@@ -97,7 +105,10 @@ public class Game extends Canvas implements Runnable,KeyListener{
 		graphics.setColor(Color.black);
 		graphics.fillRect(0, 0, WIDTH, HEIGHT);
 		
+		world.renderWorld(graphics);
+
 		renderEntity(graphics);
+		
 		
 		graphics.dispose();
 		graphics = bufferS.getDrawGraphics();
@@ -111,6 +122,7 @@ public class Game extends Canvas implements Runnable,KeyListener{
 			e.render(g);
 		}
 	}
+	
 	public void updateEntity() {
 		for(int i = 0;i<entityList.size();i++) {
 			Entity e = entityList.get(i);
@@ -149,42 +161,62 @@ public class Game extends Canvas implements Runnable,KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-			player.setMoving(true);
+		if(e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
 			player.setLeft(true);
-		}else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			player.setMoving(true);
+		}else if(e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 			player.setRight(true);
 		}
 		
-		if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-			player.setMoving(true);
+		if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(true);
-		}else if(e.getKeyCode() == KeyEvent.VK_UP) {
-			player.setMoving(true);
+		}else if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 			player.setUp(true);
 		}
-		
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			player.setShoot(true);
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-			player.setMoving(false);
+		if(e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
 			player.setLeft(false);
-		}else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			player.setMoving(false);
+		}else if(e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 			player.setRight(false);
 		}
 		
-		if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-			player.setMoving(false);
+		if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(false);
-		}else if(e.getKeyCode() == KeyEvent.VK_UP) {
-			player.setMoving(false);
-			player.setUp(false);
 		}
 		
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			player.setShoot(false);
+		}
 	}
+
+	public static int Width() {
+		return WIDTH;
+	}
+
+	public static int Height() {
+		return HEIGHT;
+	}
+
+	public static List<Entity> getEntityList() {
+		return entityList;
+	}
+
+	public static Player getPlayer() {
+		return player;
+	}
+
+	public static List<Bullet> getBulletList() {
+		return bulletList;
+	}
+
+	public static List<Enemy> getEnemyList() {
+		return enemyList;
+	}
+
 	
 }

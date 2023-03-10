@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class SpriteSheet {
-	private BufferedImage spriteSheet;
+	private static BufferedImage spriteSheet;
 	
 	public SpriteSheet(String path) {
 		try {
@@ -15,7 +15,7 @@ public class SpriteSheet {
 			
 		}
 	}
-	public BufferedImage getSubimage(int x ,int y, int width, int height) {
+	public static BufferedImage getSubimage(int x ,int y, int width, int height) {
 		return spriteSheet.getSubimage(x, y, width, height);
 	}
 	
