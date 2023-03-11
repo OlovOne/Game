@@ -26,4 +26,17 @@ public class Tile {
 	public void render(Graphics g) {
 		g.drawImage(sprite, x-Camera.getX(), y-Camera.getY(), width, height, null);
 	}
+	
+	public BufferedImage flip(BufferedImage input) {
+
+		BufferedImage flipped = new BufferedImage(input.getWidth(),input.getHeight(),BufferedImage.TYPE_INT_ARGB);
+		for(int y = 0;y<height; y++) {
+			for(int x = 0; x<width; x++) {
+				flipped.setRGB((width-1)-x, y, input.getRGB(x, y));
+			}
+		}
+		return flipped;
+
+	}
+	
 }

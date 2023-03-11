@@ -9,8 +9,11 @@ import javax.imageio.ImageIO;
 import kaukau.com.entitys.Enemy;
 import kaukau.com.game.Game;
 import kaukau.com.graphics.Camera;
+import kaukau.com.tiles.Door;
 import kaukau.com.tiles.Floor;
 import kaukau.com.tiles.Sky;
+import kaukau.com.tiles.Steps;
+import kaukau.com.tiles.Steps_left;
 import kaukau.com.tiles.Tile;
 
 public class World {
@@ -44,7 +47,15 @@ public class World {
 					Enemy e = new Enemy(xx*tileSize, yy*tileSize,tileSize,tileSize);
 					Game.getEntityList().add(e);
 					Game.getEnemyList().add(e);
-				}else {
+				}else if(pixels[nowPixel] == 0xFF80792C) {
+					tiles[nowPixel] = new Steps(xx*tileSize,yy*tileSize,tileSize,tileSize,80,48);
+				}else if(pixels[nowPixel] == 0xFF639BFF) {
+					tiles[nowPixel] = new Door(xx*tileSize,yy*tileSize,tileSize,tileSize,96,0);
+				}else if(pixels[nowPixel] == 0xFF2B78FF) {
+					tiles[nowPixel] = new Door(xx*tileSize,yy*tileSize,tileSize,tileSize,96,16);
+				}else if(pixels[nowPixel] == 0xFF8079FF) {
+					tiles[nowPixel] = new Steps_left(xx*tileSize,yy*tileSize,tileSize,tileSize,80,48);
+				}else{
 					tiles[nowPixel] = new Sky(xx*tileSize,yy*tileSize,tileSize,tileSize,80,0);
 				}
 			}
@@ -57,7 +68,42 @@ public class World {
 			e.printStackTrace();
 		}
 	}
-	
+	public static boolean isColiddionSteps_left(int xNext, int yNext) {
+		int x1 = xNext/tileSize;
+		int y1 = yNext/tileSize;
+		
+		int x2 =(xNext + tileSize-1)/tileSize;
+		int y2 = yNext/tileSize;
+		
+		int x3 = xNext/tileSize;
+		int y3 = (yNext + tileSize-1)/tileSize;
+		
+		int x4 = (xNext + tileSize-1)/tileSize;
+		int y4 = (yNext + tileSize-1)/tileSize;
+		
+		return  tiles[x1+(y1*width)] instanceof Steps_left||
+				tiles[x2+(y2*width)] instanceof Steps_left ||
+				tiles[x3+(y3*width)] instanceof Steps_left ||
+				tiles[x4+(y4*width)] instanceof Steps_left ;
+	}
+	public static boolean isColiddionSteps(int xNext, int yNext) {
+		int x1 = xNext/tileSize;
+		int y1 = yNext/tileSize;
+		
+		int x2 =(xNext + tileSize-1)/tileSize;
+		int y2 = yNext/tileSize;
+		
+		int x3 = xNext/tileSize;
+		int y3 = (yNext + tileSize-1)/tileSize;
+		
+		int x4 = (xNext + tileSize-1)/tileSize;
+		int y4 = (yNext + tileSize-1)/tileSize;
+		
+		return  tiles[x1+(y1*width)] instanceof Steps ||
+				tiles[x2+(y2*width)] instanceof Steps ||
+				tiles[x3+(y3*width)] instanceof Steps ||
+				tiles[x4+(y4*width)] instanceof Steps ;
+	}
 	public static boolean isColiddionTile(int xNext, int yNext) {
 		int x1 = xNext/tileSize;
 		int y1 = yNext/tileSize;

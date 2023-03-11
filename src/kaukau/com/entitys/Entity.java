@@ -10,6 +10,7 @@ public class Entity {
 	protected double x, y;
 	protected int width, height;
 	protected double speed;
+	protected boolean isDeath;
 	
 	public Entity(double x, double y, int width, int height) {
 		this.width = width;
@@ -28,7 +29,7 @@ public class Entity {
 		Rectangle player = new Rectangle(xNext,yNext,Game.getPlayer().getWidth(),Game.getPlayer().getHeight());
 		for(int i = 0;i<Game.getEntityList().size();i++) {
 			Entity e = Game.getEntityList().get(i);
-			if(e instanceof Player || e instanceof Bullet)
+			if(e instanceof Player || e instanceof Bullet || e.isDeath == true)
 				continue;
 			Rectangle entityCurrent = new Rectangle(e.getX(),e.getY(),e.getWidth(),e.getHeight());
 			if(entityCurrent.intersects(player)) {
@@ -96,6 +97,14 @@ public class Entity {
 
 	public void setHeight(int height) {
 		this.height = height;
+	}
+
+	public boolean isDeath() {
+		return isDeath;
+	}
+
+	public void setDeath(boolean isDeath) {
+		this.isDeath = isDeath;
 	}
 	
 }

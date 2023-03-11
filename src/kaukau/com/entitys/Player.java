@@ -88,13 +88,12 @@ public class Player extends Entity {
 		logicOfAnime();
 		logicOfCamera();
 	}
-	
+
 	public void death() {
 		if(isColiddionBullet(this)) {
-			
+
 		}
-	}
-	
+	}	
 	public void logicOfCamera() {
 		Camera.setX(Camera.clamp(getX()-Game.Width()/2, 0, (World.getWidth()*World.getTileSize())-Game.Width()));
 		Camera.setY(Camera.clamp(getY()-Game.Height()/2, 0, (World.getHeight()*World.getTileSize())-Game.Height()));
@@ -118,7 +117,11 @@ public class Player extends Entity {
 		}
 	}
 	public void gravition() {
-		if(!up && !World.isColiddionTile(getX(), (int)(y+speed))) {
+		if(!up && !World.isColiddionTile(getX(), (int)(y+speed)) 
+				&& !World.isColiddionSteps((int)(x+speed), getY()) 
+				&& !World.isColiddionSteps(getX(), (int) (y+speed))
+				&& !World.isColiddionSteps_left((int)(x+speed), getY()) 
+				&& !World.isColiddionSteps_left(getX(), (int) (y+speed))) {
 			y+=speed;
 			isFalling = true;
 		}else {
@@ -145,14 +148,61 @@ public class Player extends Entity {
 		isMoving = false;
 		if(right && !((World.getWidth()*16)-16 <= x+speed) && !World.isColiddionTile((int)(x+speed), getY())
 				&& !isColiddionPlayer((int)(x+speed), getY())) {
-			x+=speed;
-			isLeft = false;
-			isMoving = true;
-		}else if(left && !(x-speed<=0) && !World.isColiddionTile((int)(x-speed), getY())
+			if(World.isColiddionSteps(getX(), getY()) && !down) {
+				x+=speed;
+				y-=speed;
+				isLeft = false;
+				isMoving = true;
+			}else if(World.isColiddionSteps_left(getX(), getY()) && !down) {
+				x+=speed;
+				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
+					y+=speed;
+				}
+				isLeft = false;
+				isMoving = true;
+			}else if(World.isColiddionSteps_left(getX(), (int)(y+speed)) && !down) {
+				x+=speed;
+				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
+					y+=speed;
+				}
+				isLeft = false;
+				isMoving = true;
+			}else {
+				x+=speed;
+				isLeft = false;
+				isMoving = true;
+			}
+
+		}else if(World.isColiddionTile((int)(x+speed), getY()) && World.isColiddionSteps(getX(), getY())) {
+			y-=speed;
+		} else if(left && !(x-speed<=0) && !World.isColiddionTile((int)(x-speed), getY())
 				&& !isColiddionPlayer((int)(x-speed), getY())) {
-			x-=speed;
-			isLeft = true;
-			isMoving = true;
+			if(World.isColiddionSteps(getX(), getY()) && !down) {
+				x-=speed;
+				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
+					y+=speed;
+				}else
+				isLeft = true;
+				isMoving = true;
+			}else if(World.isColiddionSteps(getX(), (int)(y+speed)) && !down) {
+				x-=speed;
+				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
+					y+=speed;
+				}
+				isLeft = true;
+				isMoving = true;
+			}else if(World.isColiddionSteps_left(getX(), getY()) && !down) {
+				x-=speed;
+				y-=speed;
+				isLeft = true;
+				isMoving = true;
+			} else {
+				x-=speed;
+				isLeft = true;
+				isMoving = true;
+			}
+		}else if(World.isColiddionTile((int)(x-speed), getY()) && World.isColiddionSteps_left(getX(), getY())) {
+			y-=speed;
 		}
 
 		if(up){
@@ -162,7 +212,7 @@ public class Player extends Entity {
 			if(jump == 0) {
 				isUping = false;
 				isDownning = true;
-				if(!World.isColiddionTile(getX(), (int)(y+speed)) ){
+				if(!World.isColiddionTile(getX(), (int)(y+speed)) && !World.isColiddionSteps(getX(), (int)(y+speed))){
 					if(!isColiddionPlayer(getX(), (int)(y+speed))) {
 						y+=speed;
 					}
@@ -178,7 +228,7 @@ public class Player extends Entity {
 	public void logicOfShoot() {
 		if(isShoot) {
 			long nowTime = System.currentTimeMillis();
-			if(nowTime - lastTime >= 100) {
+			if(nowTime - lastTime >= 200) {
 				lastTime = nowTime;
 				if(isLeft) {
 					Bullet b = new Bullet(getX()+2,getY()+9,2,1,false,this);
@@ -192,7 +242,6 @@ public class Player extends Entity {
 			}
 		}
 	}
-
 	public void animeMoving() {
 		frame ++;
 		if(frame == max_Frame) {
@@ -223,9 +272,8 @@ public class Player extends Entity {
 			}
 		}
 	}
-
 	public void render(Graphics g) {
-
+		//g.fillRect(getX() - Camera.getX(),getY() - Camera.getY(), width, height);
 		if(isJump || isFalling) {
 			if(isShoot) {
 				if(isUping) {
