@@ -23,10 +23,10 @@ public class Enemy extends Entity{
 	private int frame;
 	private int cur_Frame;
 	private int quat_sprite;
-	
+
 	//death 
 	private int xMax;
-	
+
 	//Move
 	private double speed;
 	private double lastX;
@@ -71,6 +71,7 @@ public class Enemy extends Entity{
 	}
 
 	public void update() { 
+		//System.out.println();
 		lastX = x;
 		if(isColiddionBullet(this) || isDeath) {
 			isDeath = true;
@@ -79,13 +80,52 @@ public class Enemy extends Entity{
 
 			if(distanciOfPlayer() >= 60 || !isRaio() || haveTile() ) {
 				isShoot = false;
-				if((World.getWidth()*World.getTileSize())-16 == x || 0==x || World.isColiddionTile((int)(x+speed), getY())) {
+				if(World.isColiddionSteps_left(getX(),getY())) {
+					if(speed <0) {
+						if(!World.isColiddionTile(getX(),(int)(y-0.7)) 
+								|| World.isColiddionTile((int)(x-0.7), (int)(y-0.7))) {
+							y-=0.7;
+						}
+					}else {
+						if(!World.isColiddionTile(getX(),(int)(y+0.7))) {
+							y+=0.7;
+						}
+					}
+					x+=speed;
+				}else if(World.isColiddionSteps_left(getX(),(int)(y+1)) &&
+						!World.isColiddionTile(getX(), getY()+1)) {
+					y+=0.7;
+					x+=speed;
+				}else if(World.isColiddionSteps(getX(),getY())) {
+					if(speed <0) {
+						if(!World.isColiddionTile(getX(),(int)(y+0.7)) 
+								|| World.isColiddionTile((int)(x-0.7), (int)(y+0.7))) {
+							y+=0.7;
+						}
+					}else {
+						if(!World.isColiddionTile(getX(),(int)(y-0.7))) {
+							y-=0.7;
+						}
+					}
+					x+=speed;
+				}else if(World.isColiddionSteps(getX(),(int)(y+1)) &&
+						!World.isColiddionTile(getX(), getY()+1)) {
+					y+=0.7;
+					x+=speed;
+				}else if((!World.isColiddionTile((int)(x+World.getTileSize()), (int)(y+World.getTileSize()))
+						||!World.isColiddionTile((int)(x-World.getTileSize()), (int)(y+World.getTileSize())))
+						&&(!World.isColiddionSteps_left((int)(x+World.getTileSize()),(int)(y+World.getTileSize()))
+								&&!World.isColiddionSteps_left((int)(x-World.getTileSize()),(int)(y+World.getTileSize())))
+						&&(!World.isColiddionSteps((int)(x+World.getTileSize()),(int)(y+World.getTileSize()))
+								&&!World.isColiddionSteps((int)(x-World.getTileSize()),(int)(y+World.getTileSize())))) {
+					speed*=-1; 
+					x+=speed;
+				} else if((World.getWidth()*World.getTileSize())-16 <= x || 0>x || World.isColiddionTile((int)(x+speed), getY())) {
 					speed*=-1;
-				}else if(!World.isColiddionTile((int)(x+World.getTileSize()), (int)(y+World.getTileSize()))
-						|| !World.isColiddionTile((int)(x-World.getTileSize()), (int)(y+World.getTileSize()))){
-					speed*=-1;
+					x+=speed;
+				}else {
+					x+=speed;
 				}
-				x+=speed;
 			}else{
 				long nowTime = System.currentTimeMillis();
 				if(nowTime - lastTime >= 100) {
@@ -120,7 +160,7 @@ public class Enemy extends Entity{
 		}
 		return false;
 	}
-	
+
 	public void deathAnime() {
 		if(xMax >=0) {
 			x-=speed;
@@ -131,7 +171,7 @@ public class Enemy extends Entity{
 			cur_Frame = 1;
 		}
 	}
-	
+
 	private boolean haveTile() {
 		int aux = 0;
 		if(x > Game.getPlayer().getX()) {

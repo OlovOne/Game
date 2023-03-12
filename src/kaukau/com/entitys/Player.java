@@ -25,6 +25,9 @@ public class Player extends Entity {
 	private int cur_Frame;
 	private int quat_sprite;
 
+	//steps
+	private boolean isSteps;
+
 	//Shoot
 	private boolean isShoot;
 	private long lastTime = System.currentTimeMillis();
@@ -146,13 +149,35 @@ public class Player extends Entity {
 	}
 	public void logicOfMove() {
 		isMoving = false;
+
 		if(right && !((World.getWidth()*16)-16 <= x+speed) && !World.isColiddionTile((int)(x+speed), getY())
 				&& !isColiddionPlayer((int)(x+speed), getY())) {
-			if(World.isColiddionSteps(getX(), getY()) && !down) {
+			if(World.isColiddionSteps(getX(), getY()) && down 
+					&& World.isColiddionTile(getX(), (int)(y+speed))) {	
+				x+=speed;
+				isLeft = false;
+				isMoving = true;
+				isSteps = false;
+			}else if(World.isColiddionSteps(getX(), getY()) && down){
 				x+=speed;
 				y-=speed;
 				isLeft = false;
 				isMoving = true;
+				isSteps = true;
+			}else if(World.isColiddionSteps_left(getX(), (int) (y+speed)) && down){
+				x+=speed;
+				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
+					y+=speed;
+				}
+				isLeft = false;
+				isMoving = true;
+				isSteps = true;
+			}else if(World.isColiddionSteps(getX(), getY()) && !down) {
+				x+=speed;
+				y-=speed;
+				isLeft = false;
+				isMoving = true;
+				isSteps = true;
 			}else if(World.isColiddionSteps_left(getX(), getY()) && !down) {
 				x+=speed;
 				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
@@ -160,6 +185,7 @@ public class Player extends Entity {
 				}
 				isLeft = false;
 				isMoving = true;
+				isSteps = true;
 			}else if(World.isColiddionSteps_left(getX(), (int)(y+speed)) && !down) {
 				x+=speed;
 				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
@@ -167,23 +193,46 @@ public class Player extends Entity {
 				}
 				isLeft = false;
 				isMoving = true;
+				isSteps = true;
 			}else {
 				x+=speed;
 				isLeft = false;
 				isMoving = true;
+				isSteps = false;
 			}
 
 		}else if(World.isColiddionTile((int)(x+speed), getY()) && World.isColiddionSteps(getX(), getY())) {
 			y-=speed;
 		} else if(left && !(x-speed<=0) && !World.isColiddionTile((int)(x-speed), getY())
 				&& !isColiddionPlayer((int)(x-speed), getY())) {
-			if(World.isColiddionSteps(getX(), getY()) && !down) {
+			if(World.isColiddionSteps_left(getX(), getY()) && down 
+					&& World.isColiddionTile(getX(), (int)(y+speed))) {	
+				x-=speed;
+				isLeft = true;
+				isMoving = true;
+				isSteps = false;
+			}else if(World.isColiddionSteps_left(getX(), getY()) && down){
+				x-=speed;
+				y-=speed;
+				isLeft = true;
+				isMoving = true;
+				isSteps = true;
+			}else if(World.isColiddionSteps(getX(), (int) (y+speed)) && down){
 				x-=speed;
 				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
 					y+=speed;
-				}else
+				}
 				isLeft = true;
 				isMoving = true;
+				isSteps = true;
+			}else if(World.isColiddionSteps(getX(), getY()) && !down) {
+				x-=speed;
+				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
+					y+=speed;
+				}
+				isLeft = true;
+				isMoving = true;
+				isSteps = true;
 			}else if(World.isColiddionSteps(getX(), (int)(y+speed)) && !down) {
 				x-=speed;
 				if(!World.isColiddionTile(getX(), (int)(y+speed))) {
@@ -191,15 +240,18 @@ public class Player extends Entity {
 				}
 				isLeft = true;
 				isMoving = true;
+				isSteps = true;
 			}else if(World.isColiddionSteps_left(getX(), getY()) && !down) {
 				x-=speed;
 				y-=speed;
 				isLeft = true;
 				isMoving = true;
-			} else {
+				isSteps = true;
+			}else {
 				x-=speed;
 				isLeft = true;
 				isMoving = true;
+				isSteps = false;
 			}
 		}else if(World.isColiddionTile((int)(x-speed), getY()) && World.isColiddionSteps_left(getX(), getY())) {
 			y-=speed;
