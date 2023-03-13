@@ -41,7 +41,8 @@ public class Player extends Entity {
 	private boolean isLeft;
 
 	//Jump
-	private int jumpMax, jump;
+	private boolean jump;
+	private int jumpMax, jumpLimite;
 	private boolean coliddionFloor;
 	private boolean isJump,isUping,isDownning;
 
@@ -66,7 +67,7 @@ public class Player extends Entity {
 		quat_sprite = 2;
 		cur_Frame = 0;
 		jumpMax = 40;
-		jump = jumpMax;
+		jumpLimite = jumpMax;
 		speed = 1;
 	}
 	public void getSprite(){
@@ -120,7 +121,7 @@ public class Player extends Entity {
 		}
 	}
 	public void gravition() {
-		if(!up && !World.isColiddionTile(getX(), (int)(y+speed)) 
+		if(!jump && !World.isColiddionTile(getX(), (int)(y+speed)) 
 				&& !World.isColiddionSteps((int)(x+speed), getY()) 
 				&& !World.isColiddionSteps(getX(), (int) (y+speed))
 				&& !World.isColiddionSteps_left((int)(x+speed), getY()) 
@@ -133,16 +134,16 @@ public class Player extends Entity {
 	}
 	public void jump() {
 
-		if(jump == jumpMax && World.isColiddionTile(getX(), (int)(y+speed))) {
+		if(jumpLimite == jumpMax && World.isColiddionTile(getX(), (int)(y+speed))) {
 			coliddionFloor = true;
 		}
 
-		if(World.isColiddionTile(this.getX(), (int)(y-speed)) || 0>=y-speed || jump == 0 || !coliddionFloor){
-			jump = 0;
+		if(World.isColiddionTile(this.getX(), (int)(y-speed)) || 0>=y-speed || jumpLimite == 0 || !coliddionFloor){
+			jumpLimite = 0;
 			return;
 		}else {
 			y-=speed;
-			jump--;
+			jumpLimite--;
 		}
 
 
@@ -257,26 +258,28 @@ public class Player extends Entity {
 			y-=speed;
 		}
 
-		if(up){
+		if(jump){
 			isJump = true;
 			isUping = true;
 			jump();
-			if(jump == 0) {
+			if(jumpLimite == 0) {
 				isUping = false;
 				isDownning = true;
-				if(!World.isColiddionTile(getX(), (int)(y+speed)) && !World.isColiddionSteps(getX(), (int)(y+speed))){
-					if(!isColiddionPlayer(getX(), (int)(y+speed))) {
-						y+=speed;
-					}
+				if(!World.isColiddionTile(getX(), (int)(y+speed)) 
+				&& !World.isColiddionSteps(getX(), (int)(y+speed))
+				&& !World.isColiddionSteps_left(getX(), (int)(y+speed))
+				&& !isColiddionPlayer(getX(),(int)(y+speed))){
+					y+=speed;
 				}else{
 					isDownning = false;
 					isJump = false;
-					up = false;
-					jump = jumpMax;
+					jump = false;
+					jumpLimite = jumpMax;
 				}
 			}
 		}
 	}
+	
 	public void logicOfShoot() {
 		if(isShoot) {
 			long nowTime = System.currentTimeMillis();
@@ -294,6 +297,7 @@ public class Player extends Entity {
 			}
 		}
 	}
+	
 	public void animeMoving() {
 		frame ++;
 		if(frame == max_Frame) {
@@ -412,4 +416,12 @@ public class Player extends Entity {
 		this.isShoot = isShoot;
 	}
 
+	public boolean isJump() {
+		return jump;
+	}
+
+	public void setJump(boolean jump) {
+		this.jump = jump;
+	}
+	
 }

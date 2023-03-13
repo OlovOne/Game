@@ -173,6 +173,9 @@ public class Game extends Canvas implements Runnable,KeyListener{
 			player.setUp(true);
 		}
 		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			player.setJump(true);
+		}
+		if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
 			player.setShoot(true);
 		}
 	}
@@ -187,7 +190,7 @@ public class Game extends Canvas implements Runnable,KeyListener{
 		if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(false);
 		}
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+		if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
 			player.setShoot(false);
 		}
 	}

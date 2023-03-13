@@ -120,7 +120,9 @@ public class Enemy extends Entity{
 								&&!World.isColiddionSteps((int)(x-World.getTileSize()),(int)(y+World.getTileSize())))) {
 					speed*=-1; 
 					x+=speed;
-				} else if((World.getWidth()*World.getTileSize())-16 <= x || 0>x || World.isColiddionTile((int)(x+speed), getY())) {
+				} else if((World.getWidth()*World.getTileSize())-16 <= x || 0>x 
+						|| World.isColiddionTile((int)(x+speed), getY())
+						) {
 					speed*=-1;
 					x+=speed;
 				}else {
@@ -210,7 +212,7 @@ public class Enemy extends Entity{
 		}
 	}
 	public void render(Graphics g) {
-		//g.fillRect(getX() - Camera.getX(),getY() - Camera.getY(), width, height);
+		g.fillRect(getX() - Camera.getX(),getY() - Camera.getY(), width, height);
 		if(isDeath) {
 			g.drawImage(sprite_death[cur_Frame],getX() - Camera.getX(),getY() - Camera.getY(), null);
 		}else {
